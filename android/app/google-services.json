@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "567943146904",
+    "project_id": "mehta-pratice",
+    "storage_bucket": "mehta-pratice.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567943146904:android:80715d98e0acb103d7cfed",
+        "android_client_info": {
+          "package_name": "com.example.firebase_testing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "567943146904-l6162fkj77487t6q8k5ca51on8bbfcim.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.firebase_testing",
+            "certificate_hash": "691d28dbd4f180bd8753fafbd8d70687b3e2b6b0"
+          }
+        },
+        {
+          "client_id": "567943146904-mgi5nh6f4rlhv84q7aksk98sgv1opv03.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjKNVQYOKvEGa4uGq4Qh3OF4Zc98AUgzQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "567943146904-mgi5nh6f4rlhv84q7aksk98sgv1opv03.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
