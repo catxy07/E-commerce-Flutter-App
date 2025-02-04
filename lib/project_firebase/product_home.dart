@@ -91,7 +91,7 @@ class _productHomeState extends State<productHome> {
       return;
     }
 
-    yield* FirebaseFirestore.instance
+     FirebaseFirestore.instance
         .collection('favorites')
         .where('user_id', isEqualTo: userId) // Fetch only the logged-in user's favorites
         .snapshots();
