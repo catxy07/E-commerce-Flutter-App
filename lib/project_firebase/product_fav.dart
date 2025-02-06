@@ -1,5 +1,8 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_testing/project_firebase/user_id.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class productFav extends StatefulWidget {
 
@@ -12,7 +15,7 @@ class productFav extends StatefulWidget {
 
 class _productFavState extends State<productFav> {
 
-
+  String userId = '';
 
   // Future<void> addtoFavourite(Map<String, dynamic> productData) async {
   //   try{
@@ -23,6 +26,8 @@ class _productFavState extends State<productFav> {
   //   }
   // }
 
+
+
   Future<void> removetoFavorites(String productId) async{
     try{
       await FirebaseFirestore.instance.collection('favorites').doc(productId).delete();
@@ -32,18 +37,43 @@ class _productFavState extends State<productFav> {
     }
   }
 
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchmethod();
+  }
+  Future<QuerySnapshot> fetchfavorites() async{
+    final db = FirebaseFirestore.instance;
 
-  Stream<QuerySnapshot> fetchfavorites(){
-    return FirebaseFirestore.instance.collection('favorites').snapshots();
+    SharedPreferences share = await SharedPreferences.getInstance();
+    String? userId = share.getString('user_id');
+    print("id is : $userId");
+   return  db.collection("favorites").where("user_id", isEqualTo: userId).get();
+
+    // return FirebaseFirestore.instance.collection('favorites').snapshots();
+
+
+  }
+
+
+  Future<void> fetchmethod() async{
+    SharedPreferences share = await SharedPreferences.getInstance();
+    userId = share.getString('user_id')!;
+    print('user id is $userId');
+    setState(() {
+
+    });
   }
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Favorites'),
       ),
       body:StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('favorites').snapshots(),
+        stream: FirebaseFirestore.instance.collection("favorites").where("user_id", isEqualTo: userId).snapshots(),
     builder: (context, snapshot) {
     if (snapshot.connectionState == ConnectionState.waiting) {
     return Center(child: CircularProgressIndicator());

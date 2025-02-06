@@ -82,20 +82,6 @@ class _productHomeState extends State<productHome> {
   }
 
 
-  Stream<QuerySnapshot> fetchfavorites() async* {
-    SharedPreferences share = await SharedPreferences.getInstance();
-    String? userId = share.getString('user_id');
-
-    if (userId == null) {
-      print("User ID not found");
-      return;
-    }
-
-     FirebaseFirestore.instance
-        .collection('favorites')
-        .where('user_id', isEqualTo: userId) // Fetch only the logged-in user's favorites
-        .snapshots();
-  }
 
 
 

@@ -16,11 +16,35 @@ class _ProductOrderState extends State<ProductOrder> {
   void initState() {
     super.initState();
     fetchProducts();
+    listForRealtimeUpdate();
+  }
+
+  Future<void> fetchproduct() async {
+    try {
+      final database =
+          await FirebaseFirestore.instance.collection('data').get();
+      setState(() {
+        products = database.docs;
+      });
+    } catch (e) {
+      print("Error from fetch: $e");
+    }
+  }
+
+  void listForRealtimeUpdate() {
+    FirebaseFirestore.instance
+        .collection('data')
+        .snapshots()
+        .listen((realTime) {
+      setState(() {
+        products = realTime.docs;
+      });
+    });
   }
 
   Future<void> fetchProducts() async {
     QuerySnapshot querySnapshot =
-    await FirebaseFirestore.instance.collection('products').get();
+        await FirebaseFirestore.instance.collection('products').get();
     setState(() {
       products = querySnapshot.docs;
     });
@@ -29,37 +53,134 @@ class _ProductOrderState extends State<ProductOrder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Row(
-            children: [
-              const SizedBox(height: 145, width: 25),
-              Container(
-                height: 35,
-                width: 40,
-                decoration: const BoxDecoration(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(
+                  context,
+                );
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: 10),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
                   color: Colors.black12,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0),
-                  ),
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_left, size: 25),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const productHome()),
-                    );
-                  },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Icon(Icons.arrow_back_ios, size: 20),
                 ),
               ),
-              const SizedBox(width: 110),
-              const Text("Order", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27)),
-            ],
-          ),
+            ),
+            SizedBox(
+              width: 100,
+            ),
+            Text("Order",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27)),
+          ],
+        ),
+      ),
+      body: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: 5,
+        itemBuilder: (context, index) {
+          // final product = products[index];
+          // final productData = product.data() as Map<String, dynamic>;
+          // return Card(
+          //   child: SizedBox(
+          //     height: 400,
+          //     child: Column(
+          //       children: [
+          //         Container(
+          //           width: 200,
+          //           height: 170,
+          //           decoration: BoxDecoration(
+          //             borderRadius: BorderRadius.circular(8.0),
+          //             image: DecorationImage(
+          //               image: AssetImage(
+          //                   productData['imagePath'] ?? ''),
+          //               fit: BoxFit.cover,
+          //             ),
+          //           ),
+          //         ),
+          //         Text(
+          //           productData['productNama'] ?? 'Unknown Product',
+          //           style: const TextStyle(
+          //             fontSize: 21,
+          //             fontWeight: FontWeight.bold,
+          //           ),
+          //         ),
+          //         const SizedBox(height: 5),
+          //         Text(
+          //           productData['Descripition'] ??
+          //               'No description available',
+          //           style: const TextStyle(
+          //             fontSize: 14,
+          //             color: Colors.grey,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // );
+          return Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 10,
+                ),
+                Container(
+                  // color: Colors.black,
+                  padding: EdgeInsets.only(right: 10),
+                  width: 130,
+                  height: 150,
+                  child: Image.asset(
+                    "assets/black.jpg",
+                    // width: 280,
+                    // height: 250,
+                  ),
+                ),
+                // SizedBox(width: 10,), // SizedBox(width: 10,),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 100,
+                      child: Text(
+                        "To Mally From James",
+                        style: TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      child: Text(
+                        "Oversize sweater",
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w500),
+                      ),
+                    )
+                  ],
 
-        ],
+
+                ),
+
+                Container(
+                  padding: EdgeInsets.only(left: 70),
+                    child: Text("\$50"+".00",  style: TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.bold) ))
+              ],
+            ),
+          );
+        },
       ),
     );
   }
