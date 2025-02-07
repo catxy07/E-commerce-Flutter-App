@@ -11,7 +11,7 @@ class ProductOrder extends StatefulWidget {
 
 class _ProductOrderState extends State<ProductOrder> {
   List<DocumentSnapshot> products = [];
-
+ int m = 50;
   @override
   void initState() {
     super.initState();
@@ -29,6 +29,20 @@ class _ProductOrderState extends State<ProductOrder> {
     } catch (e) {
       print("Error from fetch: $e");
     }
+  }
+
+  int count = 0;
+
+  void _increment() {
+    setState(() {
+      count = count + 1;
+    });
+  }
+
+  void _decrement() {
+    setState(() {
+      count = count - 1;
+    });
   }
 
   void listForRealtimeUpdate() {
@@ -86,7 +100,7 @@ class _ProductOrderState extends State<ProductOrder> {
       ),
       body: ListView.builder(
         scrollDirection: Axis.vertical,
-        itemCount: 5,
+        itemCount: products.length,
         itemBuilder: (context, index) {
           // final product = products[index];
           // final productData = product.data() as Map<String, dynamic>;
@@ -167,16 +181,56 @@ class _ProductOrderState extends State<ProductOrder> {
                         style: TextStyle(
                             fontSize: 12, fontWeight: FontWeight.w500),
                       ),
-                    )
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(width: 20),
+                        Container(
+                          padding: EdgeInsets.only(top: 10),
+                          child: GestureDetector(
+                            onTap: (){
+                              _decrement();
+                              if ( count == 0){
+                                count = 1;
+                              }
+                            },
+                            child: Text(
+                              "-",
+                              style: TextStyle(fontSize: 45),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Text(
+                            "$count",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(top: 10),
+                          child: GestureDetector(
+                            onTap: (){
+                              _increment();
+                            },
+                              child: Text("+", style: TextStyle(fontSize: 30))),
+                        ),
+                      ],
+                    ),
                   ],
-
-
                 ),
 
                 Container(
-                  padding: EdgeInsets.only(left: 70),
-                    child: Text("\$50"+".00",  style: TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.bold) ))
+                    padding: EdgeInsets.only(left: 70),
+                    child: Text("\$${m*count}" + ".00",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)))
               ],
             ),
           );
