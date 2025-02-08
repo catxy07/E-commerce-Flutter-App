@@ -49,8 +49,6 @@ class _productHomeState extends State<productHome> {
 
   List<Map<String, dynamic>> Favproduct = [];
 
-
-
   Future<void> addtoFavourite(Map<String, dynamic> productData) async {
     SharedPreferences share = await SharedPreferences.getInstance();
     String? userId = share.getString('user_id');
@@ -70,21 +68,17 @@ class _productHomeState extends State<productHome> {
     }
   }
 
-
-
   Future<void> removetoFavorites(String favoriteId) async {
     try {
-      await FirebaseFirestore.instance.collection('favorites').doc(favoriteId).delete();
+      await FirebaseFirestore.instance
+          .collection('favorites')
+          .doc(favoriteId)
+          .delete();
       print("Product removed from favorites ✅");
     } catch (e) {
       print("Error removing from favorites: $e ❌");
     }
   }
-
-
-
-
-
 
   void ClicktoFav(DocumentSnapshot productSnapshot) async {
     try {
@@ -107,7 +101,8 @@ class _productHomeState extends State<productHome> {
 
       if (querySnapshot.docs.isEmpty) {
         // Product is not in favorites, add it
-        Map<String, dynamic> productData = productSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> productData =
+            productSnapshot.data() as Map<String, dynamic>;
         productData['user_id'] = userId;
         productData['productId'] = productId; // Store product ID in Firestore
 
@@ -121,9 +116,6 @@ class _productHomeState extends State<productHome> {
     }
   }
 
-
-
-
   void initState() {
     super.initState();
     fetchproduct();
@@ -133,7 +125,7 @@ class _productHomeState extends State<productHome> {
   Future<void> fetchproduct() async {
     try {
       final database =
-      await FirebaseFirestore.instance.collection('data').get();
+          await FirebaseFirestore.instance.collection('data').get();
       setState(() {
         products = database.docs;
       });
@@ -156,7 +148,6 @@ class _productHomeState extends State<productHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: SingleChildScrollView(
         child: Material(
           // borderOnForeground: debugPaintSizeEnabled = true,
@@ -240,7 +231,6 @@ class _productHomeState extends State<productHome> {
                     onTap: () {
                       Navigator.push(
                         context,
-
                         MaterialPageRoute(builder: (context) => productFav()),
                       );
                     },
@@ -344,7 +334,7 @@ class _productHomeState extends State<productHome> {
                             final pos = item[index];
                             return Padding(
                               padding:
-                              const EdgeInsets.symmetric(horizontal: 9.0),
+                                  const EdgeInsets.symmetric(horizontal: 9.0),
                               child: Container(
                                 width: 300,
                                 height: 140,
@@ -423,10 +413,11 @@ class _productHomeState extends State<productHome> {
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                             child: Icon(Icons.arrow_right)),
-
                       ],
                     ),
-                    SizedBox(height: 20,),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Column(
                       children: [
                         SizedBox(
@@ -440,128 +431,126 @@ class _productHomeState extends State<productHome> {
                               final isFav = Favproduct.contains(product);
                               // Extract two products for each row
                               final startIndex = rowIndex * 2;
-                              final endIndex = (startIndex + 2).clamp(
-                                  0, products.length);
-                              final rowItems = products.sublist(
-                                  startIndex, endIndex);
+                              final endIndex =
+                                  (startIndex + 2).clamp(0, products.length);
+                              final rowItems =
+                                  products.sublist(startIndex, endIndex);
 
                               return Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: rowItems.map((product) {
-                                  final productData = product.data() as Map<
-                                      String,
-                                      dynamic>;
-                                  return Card(
-                                    margin: const EdgeInsets.only(
-                                        left: 8, right: 8, bottom: 8),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10, right: 10, bottom: 10),
-                                      child: InkWell(
+                                  final productData =
+                                      product.data() as Map<String, dynamic>;
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10, right: 10, bottom: 10),
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ProductInfo(
+                                                      productData:
+                                                          productData,
+                                                    )));
+                                      },
+                                      child: SizedBox(
+                                        width: 168,
+                                        child: Column(
+                                          children: [
+                                            // InkWell(
+                                            //   onTap: (){
+                                            //     Navigator.push(context, MaterialPageRoute(builder: (context)=> ProductInfo()));
+                                            //   },
+                                            // ),
+                                            Align(
+                                              child: Container(
+                                                  height: 40,
+                                                  width: 50,
+                                                  // color: Colors.orange,
 
-                                        onTap: () {
-                                          Navigator.push(context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProductInfo(
-                                                        productData: productData,)));
-                                        },
-
-                                        child: SizedBox(
-                                          width: 168,
-                                          child: Column(
-
-                                            children: [
-                                              // InkWell(
-                                              //   onTap: (){
-                                              //     Navigator.push(context, MaterialPageRoute(builder: (context)=> ProductInfo()));
-                                              //   },
-                                              // ),
-                                              Align(
-                                                child: Container(
-                                                    height: 40,
-                                                    width: 50,
-                                                    // color: Colors.orange,
-
-                                                    child: IconButton(
-
-                                                        icon: Icon(isFav ? Icons
-                                                            .favorite : Icons
-                                                            .favorite_border,
-                                                          color: isFav ? Colors
-                                                              .red : Colors
-                                                              .grey, size: 20,),
-                                                        onPressed: () {
-                                                          print('ha bhai ');
-                                                          ClicktoFav(
-                                                              products[rowIndex]);
-                                                          // Navigator.push(context, MaterialPageRoute(builder: (context)=> productFav(favoriteProducts: Favproduct,)));
-                                                        }
+                                                  child: IconButton(
+                                                      icon: Icon(
+                                                        isFav
+                                                            ? Icons.favorite
+                                                            : Icons
+                                                                .favorite_border,
+                                                        color: isFav
+                                                            ? Colors.red
+                                                            : Colors.grey,
+                                                        size: 20,
+                                                      ),
+                                                      onPressed: () {
+                                                        print('ha bhai ');
+                                                        ClicktoFav(products[
+                                                            rowIndex]);
+                                                        // Navigator.push(context, MaterialPageRoute(builder: (context)=> productFav(favoriteProducts: Favproduct,)));
+                                                      }
                                                       // => ClicktoFav(product[index]),
-                                                    )
+                                                      )),
+                                              alignment: Alignment.topRight,
+                                            ),
+
+                                            Container(
+                                              width: 200,
+                                              height: 175,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        8.0),
+                                                image: DecorationImage(
+                                                  image: AssetImage(
+                                                      productData[
+                                                              'imagePath'] ??
+                                                          ''),
+                                                  fit: BoxFit.cover,
                                                 ),
-                                                alignment: Alignment.topRight,
                                               ),
+                                            ),
 
-                                              Container(
-                                                width: 200,
-                                                height: 175,
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius
-                                                      .circular(8.0),
-                                                  image: DecorationImage(
-                                                    image: AssetImage(
-                                                        productData['imagePath'] ??
-                                                            ''),
-                                                    fit: BoxFit.cover,
-
+                                            const SizedBox(height: 10),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  productData[
+                                                          'productNama'] ??
+                                                      'Unknown Product',
+                                                  style: const TextStyle(
+                                                    fontSize: 21,
+                                                    fontWeight:
+                                                        FontWeight.bold,
                                                   ),
                                                 ),
-
-                                              ),
-
-                                              const SizedBox(height: 10),
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment
-                                                    .start,
-                                                children: [
-                                                  Text(
-                                                    productData['productNama'] ??
-                                                        'Unknown Product',
-                                                    style: const TextStyle(
-                                                      fontSize: 21,
-                                                      fontWeight: FontWeight
-                                                          .bold,
-                                                    ),
+                                                const SizedBox(height: 5),
+                                                Text(
+                                                  productData[
+                                                          'Descripition'] ??
+                                                      'No description available',
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.grey,
                                                   ),
-                                                  const SizedBox(height: 5),
-                                                  Text(
-                                                    productData['Descripition'] ??
-                                                        'No description available',
-                                                    style: const TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.grey,
-                                                    ),
-                                                    maxLines: 2,
-                                                    overflow: TextOverflow
-                                                        .ellipsis,
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  '\$${productData['price'] ?? 0}',
+                                                  style: const TextStyle(
+                                                    fontSize: 22,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                    color: Colors.black,
                                                   ),
-                                                  const SizedBox(height: 10),
-                                                  Text(
-                                                    '\$${productData['price'] ??
-                                                        0}',
-                                                    style: const TextStyle(
-                                                      fontSize: 22,
-                                                      fontWeight: FontWeight
-                                                          .bold,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
@@ -571,7 +560,6 @@ class _productHomeState extends State<productHome> {
                             },
                           ),
                         ),
-
                       ],
                     )
                   ],

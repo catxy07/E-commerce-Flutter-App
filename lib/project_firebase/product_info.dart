@@ -4,9 +4,11 @@ import 'package:firebase_testing/project_firebase/product_fav.dart';
 import 'package:firebase_testing/project_firebase/product_home.dart';
 import 'package:firebase_testing/project_firebase/product_home_list.dart';
 import 'package:firebase_testing/project_firebase/product_info.dart';
+import 'package:firebase_testing/project_firebase/user_id.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductInfo extends StatefulWidget {
   final Map<String, dynamic> productData;
@@ -19,6 +21,8 @@ class ProductInfo extends StatefulWidget {
 
 class _ProductInfoState extends State<ProductInfo> {
   List<DocumentSnapshot> products = [];
+
+
 
   @override
   // void initState() {
@@ -48,7 +52,22 @@ class _ProductInfoState extends State<ProductInfo> {
   //     });
   //   });
   // }
+  Future<void> ClickToAddCart(Map<String, dynamic> productData) async{
+    SharedPreferences share = await SharedPreferences.getInstance();
+    String? userId = share.getString('user_id');
 
+    if (userId == null) {
+      print("User ID not found");
+      return;
+    }
+
+    productData['user_id'] = userId;
+    try {
+      await FirebaseFirestore.instance.collection('cart').add(productData);
+    } catch(e){
+      print("error is $e");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -167,7 +186,9 @@ class _ProductInfoState extends State<ProductInfo> {
                   height: 70,
                   decoration: BoxDecoration(),
                   child: FilledButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      ClickToAddCart(widget.productData);
+                    },
                     child: Text(
                       "Add to Cart",
                       style: TextStyle(color: Colors.white),

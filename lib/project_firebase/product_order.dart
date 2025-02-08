@@ -11,18 +11,19 @@ class ProductOrder extends StatefulWidget {
 
 class _ProductOrderState extends State<ProductOrder> {
   List<DocumentSnapshot> products = [];
- int m = 50;
+  int m = 50;
+
   @override
   void initState() {
     super.initState();
-    fetchProducts();
+    fetchproduct();
     listForRealtimeUpdate();
   }
 
   Future<void> fetchproduct() async {
     try {
       final database =
-          await FirebaseFirestore.instance.collection('data').get();
+          await FirebaseFirestore.instance.collection('cart').get();
       setState(() {
         products = database.docs;
       });
@@ -31,7 +32,7 @@ class _ProductOrderState extends State<ProductOrder> {
     }
   }
 
-  int count = 0;
+  int count = 1;
 
   void _increment() {
     setState(() {
@@ -53,14 +54,6 @@ class _ProductOrderState extends State<ProductOrder> {
       setState(() {
         products = realTime.docs;
       });
-    });
-  }
-
-  Future<void> fetchProducts() async {
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('products').get();
-    setState(() {
-      products = querySnapshot.docs;
     });
   }
 
@@ -102,6 +95,9 @@ class _ProductOrderState extends State<ProductOrder> {
         scrollDirection: Axis.vertical,
         itemCount: products.length,
         itemBuilder: (context, index) {
+          final product = products[index];
+          final a = product['price'];
+          int price = int.parse(a);
           // final product = products[index];
           // final productData = product.data() as Map<String, dynamic>;
           // return Card(
@@ -155,7 +151,7 @@ class _ProductOrderState extends State<ProductOrder> {
                   width: 130,
                   height: 150,
                   child: Image.asset(
-                    "assets/black.jpg",
+                    product['imagePath'] ?? "",
                     // width: 280,
                     // height: 250,
                   ),
@@ -167,7 +163,7 @@ class _ProductOrderState extends State<ProductOrder> {
                     Container(
                       width: 100,
                       child: Text(
-                        "To Mally From James",
+                        product['productNama'],
                         style: TextStyle(
                             fontSize: 17, fontWeight: FontWeight.bold),
                       ),
@@ -177,9 +173,9 @@ class _ProductOrderState extends State<ProductOrder> {
                     ),
                     Container(
                       child: Text(
-                        "Oversize sweater",
+                        product['Descripition'],
                         style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.w500),
+                            fontSize: 10, fontWeight: FontWeight.w500),
                       ),
                     ),
                     Row(
@@ -188,9 +184,9 @@ class _ProductOrderState extends State<ProductOrder> {
                         Container(
                           padding: EdgeInsets.only(top: 10),
                           child: GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               _decrement();
-                              if ( count == 0){
+                              if (count == 0) {
                                 count = 1;
                               }
                             },
@@ -216,9 +212,9 @@ class _ProductOrderState extends State<ProductOrder> {
                         Container(
                           padding: EdgeInsets.only(top: 10),
                           child: GestureDetector(
-                            onTap: (){
-                              _increment();
-                            },
+                              onTap: () {
+                                _increment();
+                              },
                               child: Text("+", style: TextStyle(fontSize: 30))),
                         ),
                       ],
@@ -227,8 +223,8 @@ class _ProductOrderState extends State<ProductOrder> {
                 ),
 
                 Container(
-                    padding: EdgeInsets.only(left: 70),
-                    child: Text("\$${m*count}" + ".00",
+                    padding: EdgeInsets.only(left: 40),
+                    child: Text("\$${price * count}.00",
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold)))
               ],
