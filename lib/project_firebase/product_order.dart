@@ -12,7 +12,7 @@ class ProductOrder extends StatefulWidget {
 class _ProductOrderState extends State<ProductOrder> {
   List<DocumentSnapshot> products = [];
   int m = 50;
-
+  Map<String, int> productCount = {};
   @override
   void initState() {
     super.initState();
@@ -26,23 +26,29 @@ class _ProductOrderState extends State<ProductOrder> {
           await FirebaseFirestore.instance.collection('cart').get();
       setState(() {
         products = database.docs;
+        for (var product in products) {
+          productCount.putIfAbsent(product.id, () => 1); // Ensure all products have a count
+        }
       });
+
     } catch (e) {
       print("Error from fetch: $e");
     }
   }
 
-  int count = 1;
 
-  void _increment() {
+
+  void _increment(String productID) {
     setState(() {
-      count = count + 1;
+      productCount[productID] = (productCount[productID] ?? 1) + 1;
     });
   }
 
-  void _decrement() {
+  void _decrement(String productID) {
     setState(() {
-      count = count - 1;
+      if(productCount[productID]! > 1 ){
+        productCount[productID] = (productCount[productID] ?? 1) -1;
+      }
     });
   }
 
@@ -53,6 +59,9 @@ class _ProductOrderState extends State<ProductOrder> {
         .listen((realTime) {
       setState(() {
         products = realTime.docs;
+        for (var product in products) {
+          productCount.putIfAbsent(product.id, () => 1); // Ensure all products have a count
+        }
       });
     });
   }
@@ -96,6 +105,7 @@ class _ProductOrderState extends State<ProductOrder> {
         itemCount: products.length,
         itemBuilder: (context, index) {
           final product = products[index];
+          final productcount = productCount[product.id] ?? 1;
           final a = product['price'];
           int price = int.parse(a);
           // final product = products[index];
@@ -185,11 +195,10 @@ class _ProductOrderState extends State<ProductOrder> {
                           padding: EdgeInsets.only(top: 10),
                           child: GestureDetector(
                             onTap: () {
-                              _decrement();
-                              if (count == 0) {
-                                count = 1;
-                              }
+                              _decrement(product.id);
+
                             },
+
                             child: Text(
                               "-",
                               style: TextStyle(fontSize: 45),
@@ -202,7 +211,7 @@ class _ProductOrderState extends State<ProductOrder> {
                         Container(
                           padding: EdgeInsets.only(top: 10),
                           child: Text(
-                            "$count",
+                            "$productcount",
                             style: TextStyle(fontSize: 20),
                           ),
                         ),
@@ -213,7 +222,7 @@ class _ProductOrderState extends State<ProductOrder> {
                           padding: EdgeInsets.only(top: 10),
                           child: GestureDetector(
                               onTap: () {
-                                _increment();
+                                _increment(product.id);
                               },
                               child: Text("+", style: TextStyle(fontSize: 30))),
                         ),
@@ -224,7 +233,7 @@ class _ProductOrderState extends State<ProductOrder> {
 
                 Container(
                     padding: EdgeInsets.only(left: 40),
-                    child: Text("\$${price * count}.00",
+                    child: Text("\$${price * productcount}.00",
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold)))
               ],
